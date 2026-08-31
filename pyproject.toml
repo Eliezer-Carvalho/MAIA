@@ -1,0 +1,21 @@
+[project]
+name = "maia"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "datasets>=2.14.4",
+    "ipykernel>=7.3.0",
+    "torch>=2.13.0",
+    "torchvision>=0.28.0",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
