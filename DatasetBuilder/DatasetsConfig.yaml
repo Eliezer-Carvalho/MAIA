@@ -1,0 +1,29 @@
+Datasets:
+
+  Dataset 1:
+    fonte: amalia-llm/PT-Culture_Data
+    link: https://huggingface.co/datasets/amalia-llm/PT-Culture_Data
+    descrição: Um conjunto de dados para o conhecimento cultural do português europeu (PT-PT), construído para ensinar aos modelos as tradições, figuras, lugares e expressões da cultura portuguesa.
+    exemplos: 216832
+    palavras: 21290738
+    letras: 129407253
+    tokens: 36852495
+
+
+  Dataset 2:
+    fonte: amalia-llm/smol-rewrite-PT
+    link: https://huggingface.co/datasets/amalia-llm/smol-rewrite-PT
+    descrição: Coleção focada em tarefas de reescrita de texto, como ajustar o tom para o tornar mais amigável ou profissional.
+    exemplos: 53342
+    palavras: 14033826
+    letras: 92453779
+    tokens: 24257416 
+
+  Dataset 3:
+    fonte: amalia-llm/amalia-PTradutor
+    link: https://huggingface.co/datasets/amalia-llm/amalia-PTradutor
+    descrição: Este conjunto de dados é constituído por traduções do inglês para o português e do português para o inglês. Estes pares provêm do liaad/PTradutor e foram transformados num formato de conversa através da adição de uma instrução para traduzir o texto, inserida na mensagem do utilizador ou na mensagem do sistema.
+    exemplos: 50000
+    palavras: 17299112
+    letras: 103884811
+    tokens: 26283002 
