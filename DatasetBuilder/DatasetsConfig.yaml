@@ -26,4 +26,22 @@ Datasets:
     exemplos: 50000
     palavras: 17299112
     letras: 103884811
-    tokens: 26283002 
+    tokens: 26283002
+
+  Dataset 4:
+    fonte: amalia-llm/persona_math
+    link: https://huggingface.co/datasets/amalia-llm/persona_math
+    descrição: Este é um conjunto de dados sintéticos matemáticos em PT-EUR.
+    exemplos: 63731
+    palavras: 48518265
+    letras: 290879157
+    tokens: 96606701
+
+  Dataset 5:
+    fonte: amalia-llm/smol_summarize_pt
+    link: https://huggingface.co/datasets/amalia-llm/smol_summarize_pt
+    descrição: Conjunto de dados especializado em sumarização de e-mails e notícias.
+    exemplos: 96356
+    palavras: 39030934
+    letras: 241111800
+    tokens: 65552775
