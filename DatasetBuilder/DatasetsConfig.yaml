@@ -4,6 +4,10 @@ Datasets:
     fonte: amalia-llm/PT-Culture_Data
     link: https://huggingface.co/datasets/amalia-llm/PT-Culture_Data
     descrição: Um conjunto de dados para o conhecimento cultural do português europeu (PT-PT), construído para ensinar aos modelos as tradições, figuras, lugares e expressões da cultura portuguesa.
+    normalize_name: False
+    normalize_roles: True
+    normalize_keys: False
+    remove_columns: True
     exemplos: 216832
     palavras: 21290738
     letras: 129407253
@@ -14,6 +18,10 @@ Datasets:
     fonte: amalia-llm/smol-rewrite-PT
     link: https://huggingface.co/datasets/amalia-llm/smol-rewrite-PT
     descrição: Coleção focada em tarefas de reescrita de texto, como ajustar o tom para o tornar mais amigável ou profissional.
+    normalize_name: True
+    normalize_roles: False
+    normalize_keys: False
+    remove_columns: False
     exemplos: 53342
     palavras: 14033826
     letras: 92453779
@@ -23,6 +31,10 @@ Datasets:
     fonte: amalia-llm/amalia-PTradutor
     link: https://huggingface.co/datasets/amalia-llm/amalia-PTradutor
     descrição: Este conjunto de dados é constituído por traduções do inglês para o português e do português para o inglês. Estes pares provêm do liaad/PTradutor e foram transformados num formato de conversa através da adição de uma instrução para traduzir o texto, inserida na mensagem do utilizador ou na mensagem do sistema.
+    normalize_name: False
+    normalize_roles: False
+    normalize_keys: True
+    remove_columns: False
     exemplos: 50000
     palavras: 17299112
     letras: 103884811
@@ -32,6 +44,10 @@ Datasets:
     fonte: amalia-llm/persona_math
     link: https://huggingface.co/datasets/amalia-llm/persona_math
     descrição: Este é um conjunto de dados sintéticos matemáticos em PT-EUR.
+    normalize_name: False
+    normalize_roles: True
+    normalize_keys: True
+    remove_columns: True
     exemplos: 63731
     palavras: 48518265
     letras: 290879157
@@ -41,7 +57,96 @@ Datasets:
     fonte: amalia-llm/smol_summarize_pt
     link: https://huggingface.co/datasets/amalia-llm/smol_summarize_pt
     descrição: Conjunto de dados especializado em sumarização de e-mails e notícias.
+    normalize_name: False
+    normalize_roles: False
+    normalize_keys: False
+    remove_columns: False
     exemplos: 96356
     palavras: 39030934
     letras: 241111800
     tokens: 65552775
+
+    Dataset 6:
+      fonte: amalia-llm/persona_instruction_following
+      link: https://huggingface.co/datasets/amalia-llm/persona_instruction_following
+      descrição: Este é um conjunto de dados sintéticos em formato instruct em PT-EUR.
+      normalize_name: False
+      normalize_roles: True
+      normalize_keys: True
+      remove_columns: True
+      exemplos: 27781
+      palavras: 22886136
+      letras: 157474187
+      tokens: 43630962
+
+    Dataset 7:
+      fonte: amalia-llm/ptpt-linguistics-if
+      link: https://huggingface.co/datasets/amalia-llm/ptpt-linguistics-if
+      descrição: Conjunto de dados manuscrito por um especialista em linguística portuguesa, abrangendo temas como a fonética, a ortografia, os jogos de palavras, as expressões idiomáticas e a classificação gramatical, específicos do português europeu.
+      normalize_name: False
+      normalize_roles: False
+      normalize_keys: True
+      remove_columns: False
+      exemplos: 200
+      palavras: 10478
+      letras: 61347
+      tokens: 20029
+
+    Dataset 8:
+      fonte: amalia-llm/persona_general
+      link: https://huggingface.co/datasets/amalia-llm/persona_general
+      descrição: Trata-se de um conjunto de dados sintéticos gerais em português europeu, contendo questões gerais sobre diversos temas.
+      normalize_name: False
+      normalize_roles: True
+      normalize_keys: True
+      remove_columns: True
+      exemplos: 156397
+      palavras: 117000905
+      letras: 811238762
+      tokens: 218740646
+
+    Dataset 9:
+      fonte: amalia-llm/smoltalk2_everyday_conv_pt
+      link: https://huggingface.co/datasets/amalia-llm/smoltalk2_everyday_conv_pt
+      descrição: Este conjunto de dados é constituído por uma versão portuguesa do dataset smoltalk_smollm3_everyday_conversations_no_think do HuggingFaceTB/smoltalk2.
+      normalize_name: True
+      normalize_roles: False
+      normalize_keys: False
+      remove_columns: True
+      exemplos: 2255
+      palavras: 548681
+      letras: 3248484
+      tokens: 902809
+
+
+    Dataset 10:
+      fonte: amalia-llm/wikipedia_conversations
+      link: https://huggingface.co/datasets/amalia-llm/wikipedia_conversations
+      descrição: Este é um conjunto de dados de conversas baseado em artigos da Wikipédia em português.
+      normalize_name: True
+      normalize_roles: False
+      normalize_keys: True
+      remove_columns: False
+      exemplos: 97553
+      palavras: 52722546
+      letras: 321718477
+      tokens: 89695968
+
+    Dataset 11:
+      fonte: amalia-llm/wmt24pp_xx_to_pt_10k
+      link: https://huggingface.co/datasets/amalia-llm/wmt24pp_xx_to_pt_10k
+      descrição: Trata-se de um conjunto de dados de traduções de várias línguas de origem para português.
+      normalize_name: False
+      normalize_roles: False
+      normalize_keys: True
+      remove_columns: False
+      exemplos: 10000
+      palavras: 752131
+      letras: 4698926
+      tokens: 1823442
+
+    Dataset Final:
+      exemplos: 774447 
+      palavras: 334093752
+      letras: 2156176983
+      tokens: 604366245
