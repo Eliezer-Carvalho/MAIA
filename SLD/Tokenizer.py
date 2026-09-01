@@ -18,22 +18,23 @@ TOKENIZER = AutoTokenizer.from_pretrained (MODEL)
 dataset = load_dataset ("parquet", data_files = r"C:\Users\Admin\Desktop\MAIA\DatasetBuilder\Datasets\Dataset.parquet", split = "train")
 
 def TOKENIZAÇÃO (dados):
-
-    for exemplo in dataset["conversations"]:
+  
+    """
+    Sem Truncation e sem Padding! Queremos a Tokenização pura e crua.
         
-        """
-        Sem Truncation e sem Padding! Queremos a Tokenização pura e crua.
-        
-        # Chat Template # https://huggingface.co/docs/transformers/chat_templating # Importante perceber os params que podem ser passados.
-        """
+    # Chat Template # https://huggingface.co/docs/transformers/chat_templating # Importante perceber os params que podem ser passados.
+    # add_generation_prompt = False porque não queremos que a Tokenização adicione <assistant> no fim, isso é mais para inferência.
+    # enable_thinking = False - Erro detetado no dia 01/09 onde o dataset tokenizado estava a produzir <think> </think> pois o modelo Qwen tem a opção de Thinking, porém
+    para este treino não temos um dataset preparado para thinking.
+    """
 
-        EXEMPLO = TOKENIZER.apply_chat_template (exemplo, tokenize = False, add_generation_prompt = False) 
+    EXEMPLO = TOKENIZER.apply_chat_template (dados["conversations"], tokenize = False, add_generation_prompt = False, enable_thinking = False) 
  
-        TOKENS = TOKENIZER (EXEMPLO, add_special_tokens = False) # Tokenização
+    TOKENS = TOKENIZER (EXEMPLO, add_special_tokens = False) # Tokenização
 
-        return TOKENS
+    return TOKENS
 
-dataset_tokenizado = dataset.map (TOKENIZAÇÃO)
+dataset_tokenizado = dataset.map (TOKENIZAÇÃO, remove_columns = "conversations")
 
 dataset_tokenizado.to_parquet ("DatasetTokenizado.parquet")
 
