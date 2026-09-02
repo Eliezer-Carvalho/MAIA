@@ -17,6 +17,8 @@ TOKENIZER = AutoTokenizer.from_pretrained (MODEL)
 #### Dataset
 dataset = load_dataset ("parquet", data_files = r"C:\Users\Admin\Desktop\MAIA\DatasetBuilder\Datasets\Dataset.parquet", split = "train")
 
+#teste = load_dataset ("parquet", data_files = r"C:\Users\Admin\Desktop\MAIA\DatasetBuilder\Datasets\Dataset.parquet", split = "train[:1%]")
+
 def TOKENIZAÇÃO (dados):
   
     """
@@ -26,6 +28,9 @@ def TOKENIZAÇÃO (dados):
     # add_generation_prompt = False porque não queremos que a Tokenização adicione <assistant> no fim, isso é mais para inferência.
     # enable_thinking = False - Erro detetado no dia 01/09 onde o dataset tokenizado estava a produzir <think> </think> pois o modelo Qwen tem a opção de Thinking, porém
     para este treino não temos um dataset preparado para thinking.
+
+    01/09 - Cheguei à conclusão que não importa ter <think> </think> ou não de acordo com este link:
+    https://huggingface.co/blog/qwen-3-chat-template-deep-dive - Para perceber enable_thinking
     """
 
     EXEMPLO = TOKENIZER.apply_chat_template (dados["conversations"], tokenize = False, add_generation_prompt = False, enable_thinking = False) 
