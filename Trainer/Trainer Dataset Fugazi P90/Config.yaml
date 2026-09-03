@@ -1,0 +1,21 @@
+Dataset:
+  nome: FugaziP90.parquet
+  path: C:\Users\Admin\Desktop\MAIA\Fugazi Dataset - Fixed Sequence Length Derived from the Original Sequence-Length Distribution\Fugazi Datasets\FugaziP90.parquet
+  sequence_len: 1594
+
+Modelo:
+  nome: Qwen/Qwen3-8B
+  link: https://huggingface.co/Qwen/Qwen3-8B
+  quant: True
+
+LoRA:
+  rank: 16
+  alpha: 32
+  dropout: 0.05
+
+Training_Args:
+  lr: 2e-4
+  effective_batch: 16 
+  micro_batch: 1
+  max_steps: 10
+  warmup_steps: 2
