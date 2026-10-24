@@ -74,7 +74,7 @@ dataset4 = load_dataset ("parquet", data_files = , split = "train")
 dataset = concatenate_datasets ([dataset1, dataset2, dataset3, dataset4])
 ```
 
-<h3> TL;DR </h3>
+<h3> <a href = https://github.com/Eliezer-Carvalho/MAIA/blob/master/dataset/Config/DatasetsConfig.yaml> TL;DR</a></h3>
 
 Alterações realizadas aos datasets originais com o objetivo de obter o formato pretendido.
 
