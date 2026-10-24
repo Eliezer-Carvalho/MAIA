@@ -1,4 +1,4 @@
-<h1> <a href = https://github.com/Eliezer-Carvalho/MAIA/blob/master/DatasetBuilder/DatasetBuilder.ipynb> Construção dos Datasets </a> </h1>
+<h1> <a href = https://github.com/Eliezer-Carvalho/MAIA/blob/master/dataset/DatasetBuilder.ipynb> Construção dos Datasets </a> </h1>
 
 O objetivo era que todos os datasets tivessem este formato:
 
@@ -94,7 +94,7 @@ Alterações realizadas aos datasets originais com o objetivo de obter o formato
 
 
 
-<h1> <a href = "https://github.com/Eliezer-Carvalho/MAIA/blob/master/DatasetBuilder/DatasetAnalysis.ipynb"> Análise dos Datasets </a> </h1>
+<h1> <a href = "https://github.com/Eliezer-Carvalho/MAIA/blob/master/DatasetBuilder/DatasetAnalysis.ipynbhttps://github.com/Eliezer-Carvalho/MAIA/blob/master/dataset/DatasetAnalysis.ipynb"> Análise dos Datasets </a> </h1>
 
 Para cada dataset foi realizada uma análise de acordo com os seguintes parâmetros:
 
