@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer
 from datasets import load_dataset
+import time
 
 """
 Na construção deste .py deparei-me com uma questão que é muito importante ter em conta.
@@ -15,7 +16,8 @@ MODEL = "Qwen/Qwen3-8B"
 TOKENIZER = AutoTokenizer.from_pretrained (MODEL)
 
 #### Dataset
-dataset = load_dataset ("parquet", data_files = r"C:\Users\Admin\Desktop\MAIA\DatasetBuilder\Datasets\Dataset.parquet", split = "train")
+# Sem necessidade de Streaming
+dataset = load_dataset ("parquet", data_files = r"C:\Users\User\Desktop\MAIA\dataset\Datasets\Dataset.parquet", split = "train")
 
 #teste = load_dataset ("parquet", data_files = r"C:\Users\Admin\Desktop\MAIA\DatasetBuilder\Datasets\Dataset.parquet", split = "train[:1%]")
 
@@ -35,23 +37,13 @@ def TOKENIZAÇÃO (dados):
 
     EXEMPLO = TOKENIZER.apply_chat_template (dados["conversations"], tokenize = False, add_generation_prompt = False, enable_thinking = False) 
  
-    TOKENS = TOKENIZER (EXEMPLO, add_special_tokens = False) # Tokenização
+    TOKENS = TOKENIZER (EXEMPLO, add_special_tokens = False)
 
     return TOKENS
 
+
 dataset_tokenizado = dataset.map (TOKENIZAÇÃO, remove_columns = "conversations")
-
 dataset_tokenizado.to_parquet ("DatasetTokenizado.parquet")
-
-
-
-
-
-
-
-
-
-
 
 """
 ISTO SERIA O CORRETO CASO A IDEIA FOSSE TOKENIZAR APENAS O CONTENT! 
