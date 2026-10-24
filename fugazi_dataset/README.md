@@ -75,7 +75,6 @@ for x in dataset:
 
 repeat = set ()
 for i in dados:
-    #print (i)
     repeat.add (tuple (i["input_ids"])) 
 
 print ("---" * 50) 
