@@ -136,16 +136,21 @@ print (f"Número de Tokens do Content: {sum(TOKENS_CONTENT)}")
 print (f"Número de Tokens de Treino: {sum(TOKENS_TREINO)}")
 ```
 
-<table>
-    <thead>
-        <th> cdcc </th>
-    </thead>
-    <tr>
-        <th> cc ccdcd </th>
-    </tr>
-    <tr>
-        <td> xsxsx </td>
-    </tr>
+<h3> TL;DR  </h3>
 
+| | Exemplos | Palavras | Letras | Tokens Conteúdo | Tokens Treino |
+| ------------------------------------------ | :-----: | :-----: | :-----: | :-----: | :-----: | 
+| amalia-llm/PT-Culture_Data                 |216 832|21 290 738|129 407 253|36 852 495|40 341 173|         
+| amalia-llm/smol-rewrite-PT                 |53 342         |14 033 826         |92 453 779         |24 257 416         |25 270 914         |         
+| amalia-llm/amalia-PTradutor                |50 000         |17 299 112         |103 884 811         |26 283 002         |27 107 702         |         
+| amalia-llm/persona_math                    |63 731         |48 518 265         |290 879 157         |96 606 701         |97 498 935         |         
+| amalia-llm/smol_summarize_pt               |96 356         |39 030 934         |241 111 800         |65 552 775         |67 143 784         |         
+| amalia-llm/persona_instruction_following   |27 781         |22 886 136         |157 474 187         |43 630 962         |44 019 896         |         
+| amalia-llm/ptpt-linguistics-if             |601         |35 629         |213 342         |64 680         |73 094         |         
+| amalia-llm/persona_general                 |156 397         |117 000 905         |811 238 762         |218 740 646         |220 930 203         |         
+| amalia-llm/smoltalk2_everyday_conv_pt      |2255         |548 681         |3 248 484         |902 809         |1 012 460         |         
+| amalia-llm/wikipedia_conversations         |97 553         |52 722 546         |321 718 477         |89 695 968         |94 610 420         |         
+| amalia-llm/wmt24pp_xx_to_pt_10k            |10 000         |752 131         |4 698 926         |1 823 442         |1 988 847         |         
+| <b> Dataset Final </b> | <b> 774 848 </b> | <b>334 118 903</b> | <b>2 156 328 978</b> | <b>604 410 896</b> | <b>619 997 428</b> |
 
-</table>
+<i> Como é óbvio, os dados do Dataset Final correspondem à soma das labels dos datasets originais. | Dados de 24/10/2026 </i>
