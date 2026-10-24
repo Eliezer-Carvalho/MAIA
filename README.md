@@ -1,6 +1,10 @@
-<h1> Dataset Builder </h1>
+<h1> <a href = https://github.com/Eliezer-Carvalho/MAIA/tree/master/dataset> dataset </a> </h1>
 
-Código fonte da construção do Dataset Original.
+<p align = "center">  <img width = "900" height = "650" src = "https://github.com/Eliezer-Carvalho/MAIA/blob/master/imgs/dataset.png">  </p>
+
+
+
+
 
 <h1> Game Plan </h1>
 
