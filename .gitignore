@@ -10,5 +10,4 @@ wheels/
 .venv
 
 # Parquet Files
-
 *.parquet
