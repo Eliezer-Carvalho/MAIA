@@ -136,7 +136,7 @@ print (f"Número de Tokens do Content: {sum(TOKENS_CONTENT)}")
 print (f"Número de Tokens de Treino: {sum(TOKENS_TREINO)}")
 ```
 
-<h3> TL;DR  </h3>
+<h3> <a href = https://github.com/Eliezer-Carvalho/MAIA/blob/master/dataset/Config/DatasetsConfig.yaml> TL;DR </a>  </h3>
 
 | | Exemplos | Palavras | Letras | Tokens Conteúdo | Tokens Treino |
 | ------------------------------------------ | :-----: | :-----: | :-----: | :-----: | :-----: | 
@@ -153,4 +153,4 @@ print (f"Número de Tokens de Treino: {sum(TOKENS_TREINO)}")
 | amalia-llm/wmt24pp_xx_to_pt_10k            |10 000         |752 131         |4 698 926         |1 823 442         |1 988 847         |         
 | <b> Dataset Final </b> | <b> 774 848 </b> | <b>334 118 903</b> | <b>2 156 328 978</b> | <b>604 410 896</b> | <b>619 997 428</b> |
 
-<i> Como é óbvio, os dados do Dataset Final correspondem à soma das labels dos datasets originais. | Dados de 24/10/2026 </i>
+<i> Como é óbvio, os dados do Dataset Final correspondem à soma das labels dos datasets originais. <b>Dados de 24/10/2026</b></i>.
