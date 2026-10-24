@@ -1,4 +1,4 @@
-<h1> <a href = > Tokenização do Dataset </a> </h1>
+<h1> <a href = https://github.com/Eliezer-Carvalho/MAIA/blob/master/fugazi_dataset/Dataset/tokenizer.py> Tokenização do Dataset </a> </h1>
 
 Antes de tudo, tivemos que converter o Dataset para o cenário real de treino. <b>Onde o mesmo está Tokenizado.</b> <br>
 Não foi preciso usar <i>streaming </i> para realizar a Tokenização. <br>
@@ -23,7 +23,7 @@ dataset_tokenizado = dataset.map (TOKENIZAÇÃO, remove_columns = "conversations
 dataset_tokenizado.to_parquet ("DatasetTokenizado.parquet")
 ```
 
-<h1> <a href = > Sequence Length Distribution</a> </h1>
+<h1> <a href = https://github.com/Eliezer-Carvalho/MAIA/blob/master/fugazi_dataset/Dataset/sequence_len_distribution.ipynb > Sequence Length Distribution</a> </h1>
 
 Nesta etapa estudámos o Dataset Tokenizado a partir da <b>Distribuição da Sequence Length</b>. <br>
 Anteriormente, a Tokenização foi realizada sem Truncation nem Padding, pois nesta fase apenas procuramos estudar a distribuição do dataset.
@@ -33,8 +33,11 @@ Anteriormente, a Tokenização foi realizada sem Truncation nem Padding, pois ne
 |-| :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | 
 | Dataset Tokenizado S/Truncation & Padding | 26 | 5128 | 800 | 727 | 1352 | 1594 | 1716 | 2179       
 
-<i> Valores em Tokens | SLD -> Sequence Length Distribution </i>
+<i> Valores em Tokens | SLD = <b> Sequence Length Distribution </b> </i>
 
+<h3> Interpretação da Tabela </h3>
+Neste dataset o menor exemplo, tem <b> 26 tokens, </b>o maior tem <b> 5128 tokens</b> e a média por exemplo é de <b> 800 tokens</b>. <br>
+No dataset <b>95% dos exemplos têm 1716 tokens ou menos</b> de comprimento.
 
 
 
