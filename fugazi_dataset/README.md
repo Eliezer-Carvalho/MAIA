@@ -40,7 +40,7 @@ Neste dataset o menor exemplo, tem <b> 26 tokens, </b>o maior tem <b> 5128 token
 No dataset <b>95% dos exemplos têm 1716 tokens ou menos</b> de comprimento.
 
 
-<h1> <a href = > Construção dos Datasets Fugazi </a> </h1>
+<h1> <a href = https://github.com/Eliezer-Carvalho/MAIA/blob/master/fugazi_dataset/Fugazi%20Datasets/builder.ipynb> Construção dos Datasets Fugazi </a> </h1>
 
 Após a análise da Sequence Length Distribution, construímos os Datasets Fugazi usando o valor da:
 
