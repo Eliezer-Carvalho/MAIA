@@ -4,31 +4,33 @@
 !pip install unsloth
 
 from typing import Literal
-import torch #Torch não pode estar dentro da Classe porque é utilizada em dois métodos
+import torch 
 from transformers import TrainerCallback
 
-
+import time
+import psutil
+import logging
+import numpy as np
+import yaml
+from pynvml import (
+    nvmlInit,
+    nvmlShutdown,
+    nvmlDeviceGetHandleByIndex,
+    nvmlDeviceGetMemoryInfo,
+    nvmlDeviceGetUtilizationRates
+)
 
 class Treino_Log (TrainerCallback):
 
-    def __init__ (self, dataset_card):
-
-      try:
-        import time
-        import psutil
-        import logging
-        import numpy as np
-        import yaml
-        import pynvml
-      except Exception as e:
-        print (e)
+    def __init__ (self, dataset_card: str):
 
       cuda = torch.cuda.is_available ()
 
       with open (dataset_card, "r") as file:
         self.dataset_card = yaml.safe_load (file)
 
-      self.log = logging.basicConfig (filename = "Log_Treino.log", level = logging.INFO, format = "%(message)s", force = True) #Cria um log limpo
+      logging.basicConfig (filename = "Log_Treino.log", level = logging.INFO, format = "%(message)s", force = True) #Cria um log limpo
+      self.log = logging.getLogger (__name__)
 
       self.Metricas = {
           "CPU_MEM": [],
@@ -43,13 +45,14 @@ class Treino_Log (TrainerCallback):
       }
 
       nvmlInit ()
-      self.GPU = nvmlDeviceGetHandleByIndex (0)
-      
-          
+      if cuda:
+        self.GPU = nvmlDeviceGetHandleByIndex (0)
+
+
     def on_train_begin (self, args, state, control, **kwargs):
 
-      torch.cuda.reset_peak_memory_stats ()
       torch.cuda.empty_cache ()
+      torch.cuda.reset_peak_memory_stats ()
 
       self.log.info ("Training Arguments: %s", args.to_dict ())
 
@@ -61,10 +64,9 @@ class Treino_Log (TrainerCallback):
 
     def on_substep_end (self, args, state, control, **kwargs):
 
-      
       MEM = nvmlDeviceGetMemoryInfo (self.GPU)
 
-      self.Metricas ["GPU_MEM"].append (MEM.used) #GB
+      self.Metricas ["GPU_MEM"].append (MEM.used / 1024**3) #GB
       self.Metricas ["TORCH_MEM_GPU_ALLOC"].append (torch.cuda.memory_allocated () / 1024**3) #GB
       self.Metricas ["TORCH_MEM_GPU_RESERV"].append (torch.cuda.memory_reserved () / 1024**3) #GB
       self.Metricas ["UTIL_RATE_MEM_GPU"].append (MEM.used / MEM.total * 100) #%
@@ -79,18 +81,18 @@ class Treino_Log (TrainerCallback):
       GPU_MEM_TORCH_ALLOC = torch.cuda.memory_allocated () / 1024**3 #GB
       GPU_MEM_TORCH_RESERV = torch.cuda.memory_reserved () / 1024**3 #GB
 
-      self.log.info ("Memória GPU nvml: %.2f GB", GPU_MEM_USADA)
-      self.log.info ("Memória Torch GPU Alocada: %.2f GB", GPU_MEM_TORCH_ALLOC)
-      self.log.info ("Memória Torch GPU Reservada: %.2f GB", GPU_MEM_TORCH_RESERV)
+      self.log.info ("Memória GPU nvml: %.2f GB", GPU_MEM_USADA) #GB
+      self.log.info ("Memória Torch GPU Alocada: %.2f GB", GPU_MEM_TORCH_ALLOC) #GB
+      self.log.info ("Memória Torch GPU Reservada: %.2f GB", GPU_MEM_TORCH_RESERV) #GB
 
       CPU_MEM = psutil.virtual_memory ()
-      self.log.info ("Memória CPU Usada: %.2f GB", CPU_MEM.used)
+      self.log.info ("Memória CPU Usada: %.2f GB", CPU_MEM.used / 1024**3) #GB
 
       TEMPO_STEP = time.perf_counter () - self.STEP_START_TIME
-      self.Metricas ["TEMPO_STEP"].append (TEMPO_STEP)
-      self.log.info ("Tempo do Step: %s s", TEMPO_STEP)
+      self.Metricas ["TEMPO_STEP"].append (TEMPO_STEP) #Segundos
+      self.log.info ("Tempo do Step: %s s", TEMPO_STEP) #Segundos
 
-      TOKEN_PER_S = self.dataset_card ["Dataset"]["Sequence Length"] * args.per_device_train_batch_size * args.gradient_accumulation_steps / TEMPO_STEP
+      TOKEN_PER_S = self.dataset_card ["Sequence Length"] * args.per_device_train_batch_size * args.gradient_accumulation_steps / TEMPO_STEP
       self.Metricas ["TOKEN_PER_S"].append (TOKEN_PER_S)
       self.log.info ("Tokens Per Second: %s tok/s", TOKEN_PER_S)
 
@@ -102,7 +104,7 @@ class Treino_Log (TrainerCallback):
         self.log.info ("%s", dados)
 
       self.log.info ("Estatísticas do Treino Realizado")
-   
+
       self.log.info ("Logs Memória GPU NVML: %s", self.Metricas ["GPU_MEM"])
       self.log.info ("Max Logs Memória GPU NVML: %s GB", np.max (self.Metricas ["GPU_MEM"]))
       self.log.info ("Mean Logs Memória GPU NVML: %s GB", np.mean (self.Metricas ["GPU_MEM"]))
@@ -140,6 +142,8 @@ class Treino_Log (TrainerCallback):
       self.log.info ("Mean Logs Tokens Per Second: %s tokens/s", np.mean (self.Metricas ["TOKEN_PER_S"]))
 
 
+
+
 class Training ():
 
   def __init__ (
@@ -148,16 +152,21 @@ class Training ():
       model: Literal ["Qwen/Qwen3-8B", "Qwen/Qwen3-4B", "Qwen/Qwen3-1.7B"] = "Qwen/Qwen3-4B"
       ):
 
-    cuda = torch.cuda.is_available ()
+    self.device = "cuda" if torch.cuda.is_available () else "cpu"
 
-    if not cuda:
+    if self.device != "cuda":
       raise RunTimeError ("NO CUDA, NO PARTY!")
 
     self.four_bit = four_bit
     self.model = model
 
-    if torch.cuda.is_bf16_supported ():
+    capacidade = torch.cuda.get_device_capability()
+    if capacidade >= (8, 0) and torch.cuda.is_bf16_supported():
       self.w_type = torch.bfloat16
+    else:
+      self.w_type = torch.float16
+
+    ##Arquitetura Volta - 7.0 (FP16) | Turing - 7.5 (FP16) | Ampere - 8.0 (BF16)
 
     if not isinstance (self.four_bit, bool):
       raise TypeError ("O argumento four_bit tem de ser um booleano!")
@@ -168,7 +177,6 @@ class Training ():
 
   def Dados_Hardware (self):
 
-   
     propriedades = torch.cuda.get_device_properties (device = self.device)
     mem_available = propriedades.total_memory / 1024**3
 
@@ -193,18 +201,18 @@ class Training ():
 
     if self.four_bit:
       try:
-        BitsAndBytes_Config = BitsAndBytesConfig (load_in_4bit = True, bnb_4bit_quant_type = "nf4", bnb_4bit_compute_dtype = torch.float16, bnb_4bit_use_double_quant = True, bnb_4bit_quant_storage = torch.uint8)
+        BitsAndBytes_Config = BitsAndBytesConfig (load_in_4bit = True, bnb_4bit_quant_type = "nf4", bnb_4bit_compute_dtype = self.w_type, bnb_4bit_use_double_quant = True, bnb_4bit_quant_storage = torch.uint8)
         self.Tokenizer = AutoTokenizer.from_pretrained (self.model)
         self.Modelo = AutoModelForCausalLM.from_pretrained (self.model, device_map = self.device, dtype = self.w_type, quantization_config = BitsAndBytes_Config)
       except Exception as e:
-        print (e)
+        raise RunTimeError (f"Falha ao carregar o modelo {self.Modelo}!")
 
     else:
       try:
         self.Tokenizer = AutoTokenizer.from_pretrained (self.model)
         self.Modelo = AutoModelForCausalLM.from_pretrained (self.model, device_map = self.device, dtype = self.w_type)
       except Exception as e:
-        print (e)
+        raise RunTimeError (f"Falha ao carregar o modelo {self.Modelo}!")
 
 
   def Load_Model_Unsloth (self):
@@ -336,128 +344,70 @@ class Training ():
 
 
   def Argumentos_Treino (
-      self,
-      steps_max: int = 10,
-      batch_size: int = 1,
-      effective_batch_size: int = 1,
-
-      optimizer: Literal ["adamw_torch", "adamw_bnb_8bit", "lora-fa", "lora+"] = "adamw_bnb_8bit",
-      lr: float = 2e-4,
-      steps_warmup: int = 0,
-
-      strat_eval: Literal ["no", "steps"] = "no",
+      self, 
+      steps_max: int = 10, 
+      batch_size: int = 1, 
+      effective_batch_size: int = 1, 
+      steps_warmup: int = 0, 
+      
+      strat_eval: Literal ["no", "steps"] = "no", 
       steps_eval: int | None = None, #int ou None, começando por None
-
       save: Literal ["no", "steps"] = "no",
+      
       steps_save: int = 0,
-
       strat_log: Literal ["no", "steps"] = "no",
       steps_log: int = 1,
 
-      workers_dataloader: int = 0,
       ):
-
-    if steps_max <= 0 or batch_size <= 0 or steps_warmup < 0:
-      raise ValueError ("'steps_max', 'batch_size', 'steps_warmup' tem que ser um valor maior que 0.")
-    if effective_batch_size <= 0:
-      raise ValueError ("'effective_batch_size' tem que ser um valor maior que 0.")
-    if optimizer not in ("adamw_torch", "adamw_bnb_8bit", "lora-fa", "lora+"):
-      raise ValueError ("'optimizer' tem que ser um valor entre os seguintes: {adamw_torch, adamw_bnb_8bit, lora-fa ou lora+}")
-
-    self.learning_rate = lr
 
     try:
       from transformers import TrainingArguments
     except ImportError as e:
       raise ImportError ("É necessário instalar a biblioteca 'transformers'.")
 
-    BF16 = bool
-    FP16 = bool
-    if self.Modelo.config.dtype is torch.bfloat16: #Ver pelo modelo é mais fidedigno porque é o objeto que vamos manipular
-      BF16 = True
-      FP16 = False
-    else:
-      FP16 = True
-      BF16 = False
-
-    self.optimizer = optimizer
-    if self.optimizer == "lora-fa" or self.optimizer == "lora+":
-      self.Args_Treino = TrainingArguments (
+    BF16 = self.w_type == torch.bfloat16
+    FP16 = self.w_type == torch.float16
+  
+    self.Args_Treino = TrainingArguments (
           #Treino
-          do_train = True,
-          max_steps = steps_max,
-          per_device_train_batch_size = batch_size,
-          gradient_accumulation_steps = effective_batch_size,
-
-          #Scheduler
-          lr_scheduler_type = "cosine",
-          warmup_steps = steps_warmup,
-          weight_decay = 0.01,
-
-          #Evaluation
-          eval_strategy = strat_eval,
-          eval_steps = steps_eval,
-
-          #Checkpoint
-          save_strategy = save,
-          save_steps = steps_save,
-
-          #Precision
-          #bf16 = BF16,
-          #fp16 = FP16,
-
-          #Logging
-          logging_strategy = strat_log,
-          logging_steps = steps_log,
-
-          #Dataloader
-          dataloader_num_workers = workers_dataloader,
-      )
-
-
-    else:
-      self.Args_Treino = TrainingArguments (
-          #Treino
-          do_train = True,
-          max_steps = steps_max,
-          per_device_train_batch_size = batch_size,
-          gradient_accumulation_steps = effective_batch_size,
+        do_train = True,
+        max_steps = steps_max,
+        per_device_train_batch_size = batch_size,
+        gradient_accumulation_steps = effective_batch_size,
 
           #Optimizer
-          optim = self.optimizer,
-          learning_rate = lr,
-          lr_scheduler_type = "cosine",
-          warmup_steps = steps_warmup,
-          weight_decay = 0.01,
+        optim = "adamw_bnb_8bit",
+        learning_rate = 2e-4,
+        lr_scheduler_type = "cosine",
+        warmup_steps = steps_warmup,
+        weight_decay = 0.01,
 
           #Evaluation
-          eval_strategy = strat_eval,
-          eval_steps = steps_eval,
+        eval_strategy = strat_eval,
+        eval_steps = steps_eval,
 
           #Checkpoint
-          save_strategy = save,
-          save_steps = steps_save,
+        save_strategy = save,
+        save_steps = steps_save,
 
           #Precision
-          bf16 = BF16,
-          fp16 = FP16,
+        bf16 = BF16,
+        fp16 = FP16,
 
           #Logging
-          logging_strategy = strat_log,
-          logging_steps = steps_log,
+        logging_strategy = strat_log,
+        logging_steps = steps_log,
 
-          #Dataloader
-          dataloader_num_workers = workers_dataloader,
       )
 
 
   def Dados_Treino (self):
 
-    EXEMPLOS = self.dataset_card ["Dataset"]["Exemplos"]
+    EXEMPLOS = self.dataset_card ["Exemplos"]
 
     print ("---------------------------------------------------- Dados Treino --------------------------------------------------------------")
     print (f"Número de Exemplos Processados num Step: {self.Args_Treino.per_device_train_batch_size * self.Args_Treino.gradient_accumulation_steps}")
-    print (f"Steps Necessários para completar 1 Epoch: {EXEMPLOS / self.Args_Treino.gradient_accumulation_steps}")
+    print (f"Steps Necessários para completar 1 Epoch: {EXEMPLOS / (self.Args_Treino.per_device_train_batch_size * self.Args_Treino.gradient_accumulation_steps)}")
 
     print (self.Args_Treino)
 
@@ -469,49 +419,32 @@ class Training ():
     except Exception as e:
       print (e)
 
-    if self.optimizer == "lora-fa":
-      #https://arxiv.org/pdf/2308.03303
-      try:
-        from peft.optimizers import create_lorafa_optimizer
-        #Aqui neste link https://huggingface.co/docs/peft/v0.21.0/en/package_reference/lora#lora-fa-optimizer utilizam uma func para importar cosine scheduler, nós aqui já temos definido no TrainingArguments
-      except Exception as e:
-        print (e)
-      optimizer = create_lorafa_optimizer (model = self.Modelo, r = self.r, lora_alpha = self.a, lr = self.learning_rate, weight_decay = 0.01)
-
-    if self.optimizer == "lora+":
-      #https://arxiv.org/pdf/2402.12354
-      try:
-        from peft.optimizers import create_loraplus_optimizer
-        import bitsandbytes as bnb
-      except Exception as e:
-        print (e)
-      optimizer = create_loraplus_optimizer (model = self.Modelo, optimizer_cls = bnb.optim.Adam8bit, lr = self.learning_rate, loraplus_lr_ratio = 16, weight_decay = 0.01)
-
     #Begin Training
     trainer = Trainer (
         model = self.Modelo,
         args = self.Args_Treino,
         train_dataset = self.dataset,
-        optimizers = (optimizer if self.optimizer == "lora-fa" or self.optimizer == "lora+" else None, None),
         callbacks = [Treino_Log]
     )
 
-    print (trainer)
+    trainer.train ()
+
+
 
 if __name__ == "__main__":
 
   DEMO = Training (four_bit = True, model = "Qwen/Qwen3-1.7B")
   DEMO.Dados_Hardware ()
 
-  DEMO.Load_Model_Transformers ()
-  #DEMO.Load_Model_Unsloth ()
+  #DEMO.Load_Model_Transformers ()
+  DEMO.Load_Model_Unsloth ()
   DEMO.Dados_Modelo ()
 
   DEMO.LoRA_Config ()
 
-  #DEMO.Load_Dataset (dataset_path = "", buffer_size = 1000)
+  DEMO.Load_Dataset (dataset_path = "/content/Dataset_Mean.parquet", buffer_size = 1000, dataset_card = "/content/Dataset_Mean_Card.yaml")
 
-  DEMO.Argumentos_Treino (steps_max = 10, batch_size = 5, steps_warmup = 2, effective_batch_size = 3, optimizer = "adamw_bnb_8bit")
+  DEMO.Argumentos_Treino (steps_max = 10, batch_size = 5, steps_warmup = 2, effective_batch_size = 3)
   DEMO.Dados_Treino ()
 
-  DEMO.Treino (Treino_Log)
+  DEMO.Treino (Treino_Log (dataset_card = "/content/Dataset_Mean_Card.yaml"))
