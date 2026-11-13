@@ -2,6 +2,7 @@
 
 Antes de tudo, tivemos que converter o Dataset para o cenário real de treino. <b>Onde o mesmo está Tokenizado.</b> <br>
 Não foi preciso usar <i>streaming </i> para realizar a Tokenização. <br>
+Aqui não era bem preciso definir <b> Labels </b> porque não fazem muita diferença para aquilo que queremos estudar mas fiz por boas práticas.
 
 ```python
 from transformers import AutoTokenizer
@@ -16,12 +17,24 @@ def TOKENIZAÇÃO (dados):
   
     EXEMPLO = TOKENIZER.apply_chat_template (dados["conversations"], tokenize = False, add_generation_prompt = False, enable_thinking = False) 
     TOKENS = TOKENIZER (EXEMPLO, add_special_tokens = False, padding = False, truncation = False)
+    TOKENS["labels"] = TOKENS["input_ids"].copy ()
 
     return TOKENS
 
 dataset_tokenizado = dataset.map (TOKENIZAÇÃO, remove_columns = "conversations")
 dataset_tokenizado.to_parquet ("DatasetTokenizado.parquet")
 ```
+
+Exemplo de output:
+
+```json
+{
+    "input_ids":      [101, 205, 301, 405, 345, 7567],
+    "attention_mask": [1, 1, 1, 1, 1, 1],
+    "labels":         [101, 205, 301, 405, 345, 7567]
+}
+```
+
 
 <h1> <a href = https://github.com/Eliezer-Carvalho/MAIA/blob/master/fugazi_dataset/Dataset/sequence_len_distribution.ipynb > Sequence Length Distribution</a> </h1>
 
